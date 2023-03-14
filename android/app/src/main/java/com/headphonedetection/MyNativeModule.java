@@ -10,6 +10,7 @@ import android.util.Log;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 public class MyNativeModule extends ReactContextBaseJavaModule {
     private BroadcastReceiver myReceiver;
@@ -26,12 +27,28 @@ public class MyNativeModule extends ReactContextBaseJavaModule {
                 switch (action) {
                     case BluetoothDevice.ACTION_ACL_CONNECTED:
                         Log.d("MyNativeModule", "Blutooth Connected");
+                        getReactApplicationContext()
+                                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                .emit("IS_BLUETOOTH_HEADPHONE_STATE_CHANGED", null);
                         break;
                     case BluetoothDevice.ACTION_ACL_DISCONNECTED:
                         Log.d("MyNativeModule", "Bluthooth Disconnected: ");
+                        getReactApplicationContext()
+                                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                .emit("IS_BLUETOOTH_HEADPHONE_STATE_CHANGED", null);
                         break;
                     case Intent.ACTION_HEADSET_PLUG:
                         Log.d("MyNativeModule", "Pluged EarPhone conneted Disconnected: ");
+                        int state = intent.getIntExtra("state", -1);
+                        if (state == 0) {
+                            Log.d("HeadsetPlugReceiver", "Headset unplugged!");
+                        } else if (state == 1) {
+                            Log.d("HeadsetPlugReceiver", "Headset plugged in!");
+                        }
+                        getReactApplicationContext()
+                                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                .emit("IS_BLUETOOTH_HEADPHONE_STATE_CHANGED", null);
+                        break;
                     default:
                         break;
                 }
