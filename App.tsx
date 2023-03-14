@@ -1,9 +1,11 @@
 import {View, Text} from 'react-native';
 import React, {useEffect} from 'react';
 
-export default function App() {
+import {NativeModules} from 'react-native';
 
+export default function App() {
   useEffect(() => {
+    NativeModules.MyNativeModule.myNativeMethod('Hello, world!=====');
   }, []);
 
   return (
