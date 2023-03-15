@@ -9,6 +9,14 @@ export default function App() {
       'IS_BLUETOOTH_HEADPHONE_STATE_CHANGED',
       () => {
         console.log('======='); // Outputs "Hello from Java!"
+        setTimeout(() => {
+          NativeModules.MyNativeModule.getAudioDeviceInfo(
+            (res: any) => {
+              console.log(res);
+            },
+            () => {},
+          );
+        }, 4000);
       },
     );
     NativeModules.MyNativeModule.myNativeMethod('Hello, world!=====');
