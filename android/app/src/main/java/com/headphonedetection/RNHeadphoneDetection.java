@@ -36,13 +36,13 @@ public class RNHeadphoneDetection extends ReactContextBaseJavaModule {
                         Log.d("RNHeadphoneDetection", "Blutooth Connected");
                         getReactApplicationContext()
                                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                .emit("IS_BLUETOOTH_HEADPHONE_STATE_CHANGED", null);
+                                .emit("AUDIO_DEVICE_CHANGED_NOTIFICATION", null);
                         break;
                     case BluetoothDevice.ACTION_ACL_DISCONNECTED:
                         Log.d("RNHeadphoneDetection", "Bluthooth Disconnected: ");
                         getReactApplicationContext()
                                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                .emit("IS_BLUETOOTH_HEADPHONE_STATE_CHANGED", null);
+                                .emit("AUDIO_DEVICE_CHANGED_NOTIFICATION", null);
                         break;
                     case Intent.ACTION_HEADSET_PLUG:
                         Log.d("RNHeadphoneDetection", "Pluged EarPhone conneted Disconnected: ");
