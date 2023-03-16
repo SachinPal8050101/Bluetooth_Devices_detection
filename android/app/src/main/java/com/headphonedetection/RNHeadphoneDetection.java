@@ -12,16 +12,17 @@ import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
-public class MyNativeModule extends ReactContextBaseJavaModule {
+public class RNHeadphoneDetection extends ReactContextBaseJavaModule {
     private BroadcastReceiver myReceiver;
 
-    public MyNativeModule(ReactApplicationContext reactContext) {
+    public RNHeadphoneDetection(ReactApplicationContext reactContext) {
         super(reactContext);
 
         // Create the BroadcastReceiver
@@ -32,19 +33,19 @@ public class MyNativeModule extends ReactContextBaseJavaModule {
 
                 switch (action) {
                     case BluetoothDevice.ACTION_ACL_CONNECTED:
-                        Log.d("MyNativeModule", "Blutooth Connected");
+                        Log.d("RNHeadphoneDetection", "Blutooth Connected");
                         getReactApplicationContext()
                                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                                 .emit("IS_BLUETOOTH_HEADPHONE_STATE_CHANGED", null);
                         break;
                     case BluetoothDevice.ACTION_ACL_DISCONNECTED:
-                        Log.d("MyNativeModule", "Bluthooth Disconnected: ");
+                        Log.d("RNHeadphoneDetection", "Bluthooth Disconnected: ");
                         getReactApplicationContext()
                                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                                 .emit("IS_BLUETOOTH_HEADPHONE_STATE_CHANGED", null);
                         break;
                     case Intent.ACTION_HEADSET_PLUG:
-                        Log.d("MyNativeModule", "Pluged EarPhone conneted Disconnected: ");
+                        Log.d("RNHeadphoneDetection", "Pluged EarPhone conneted Disconnected: ");
                         int state = intent.getIntExtra("state", -1);
                         if (state == 0) {
                             Log.d("HeadsetPlugReceiver", "Headset unplugged!");
@@ -71,12 +72,12 @@ public class MyNativeModule extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "MyNativeModule";
+        return "RNHeadphoneDetection";
     }
 
     @ReactMethod
     public void myNativeMethod(String message) {
-        Log.d("MyNativeModule", "Received message: " + message);
+        Log.d("RNHeadphoneDetection", "Received message: " + message);
     }
 
     @ReactMethod
@@ -86,14 +87,13 @@ public class MyNativeModule extends ReactContextBaseJavaModule {
         getReactApplicationContext().sendBroadcast(intent);
     }
 
-    @ReactMethod
-    public void getAudioDeviceInfo(Callback successCallback, Callback errorCallback) {
+    public WritableMap isAudioDeviceConnected() {
         AudioManager audioManager = (AudioManager) getReactApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         AudioDeviceInfo wiredHeadphone = null;
         AudioDeviceInfo bluetoothHeadset = null;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            AudioDeviceInfo[] audioDevices = audioManager.getDevices(AudioManager.GET_DEVICES_ALL);
+            AudioDeviceInfo[] audioDevices = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);
             for (AudioDeviceInfo deviceInfo : audioDevices) {
                 int deviceType = deviceInfo.getType();
                 if (deviceType == AudioDeviceInfo.TYPE_WIRED_HEADPHONES || deviceType == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
@@ -116,9 +116,14 @@ public class MyNativeModule extends ReactContextBaseJavaModule {
             audioDeviceInfo.putBoolean("wiredHeadphone",false);
             audioDeviceInfo.putBoolean("bluetoothHeadset",false);
         }
-        successCallback.invoke(audioDeviceInfo);
+        return audioDeviceInfo;
     }
-    
+
+    @ReactMethod
+    public void isAudioDeviceConnected(final Promise promise) {
+        promise.resolve(isAudioDeviceConnected());
+    }
+
     @Override
     public void onCatalystInstanceDestroy() {
         super.onCatalystInstanceDestroy();
