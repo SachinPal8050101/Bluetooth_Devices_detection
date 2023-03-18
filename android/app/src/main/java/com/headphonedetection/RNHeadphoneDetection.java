@@ -30,6 +30,7 @@ public class RNHeadphoneDetection extends ReactContextBaseJavaModule {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
+                System.out.println("ddd"+ action);
 
                 switch (action) {
                     case BluetoothDevice.ACTION_ACL_CONNECTED:
